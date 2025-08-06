@@ -36,12 +36,9 @@ def index():
 @app.route("/welcome", methods=["GET"])
 def welcome():
     try:
-        welcome_message = "You are Legal Advisory assistant. Greet the user and encourage them to provide their details at left side of the page and ask a question."
+        welcome_message = "Good day! Welcome to our Legal Advisory service. I'm your Legal Advisory Assistant. To help me understand your situation better, please provide your name, age and gender on the left side of the page and describe your legal issue down below. Once you've done that, feel free to ask your question, and I'll do my best to assist you."
 
-        responseData = model.generate_content(welcome_message)
-        message = responseData.text
-
-        return jsonify({'response': message})
+        return jsonify({'response': welcome_message})
     
     except Exception as e:
         print(f"An error occurred: {e}")

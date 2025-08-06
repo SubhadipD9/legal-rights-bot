@@ -1,122 +1,349 @@
-body {
-  margin: 0;
-  padding: 0;
-  font-family: "Segoe UI", sans-serif;
-  background-color: #0f1f2f;
-  color: #e0e0e0;
-  display: flex;
-  height: 100vh;
+/* Import a modern, clean font from Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
+
+/* =================================
+   1. Modern Setup & Variables
+   ================================= */
+:root {
+  --font-sans: 'Inter', 'Segoe UI', 'Roboto', system-ui, sans-serif;
+  --radius-sm: 6px;
+  --radius-md: 12px;
+  --transition-speed: 0.3s;
+
+  /* Color Palette */
+  --accent: #00c8ff;
+  --accent-glow: rgba(0, 200, 255, 0.2);
+  --success: #1ed760;
+  --text-primary: #f0f4f8;
+  --text-secondary: #8892b0;
+
+  /* Glassmorphism Backgrounds & Borders */
+  --glass-bg: rgba(24, 40, 58, 0.6);
+  --glass-border: rgba(255, 255, 255, 0.1);
+  --dark-bg: #0a1929;
 }
 
+/* =================================
+   2. General & Body Styles
+   ================================= */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* Add a subtle gradient and set base font styles */
+body {
+  font-family: var(--font-sans);
+  color: var(--text-primary);
+  background-color: var(--dark-bg);
+  background-image: radial-gradient(circle at 10% 20%, rgba(0, 200, 255, 0.1), transparent 30%),
+                    radial-gradient(circle at 90% 80%, rgba(29, 215, 96, 0.1), transparent 35%);
+  display: flex;
+  min-height: 100vh;
+  height: 100vh; /* Lock height on desktop */
+  overflow: hidden; /* Hide body scrollbars on desktop */
+}
+
+/* Custom Scrollbar for a modern look */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+/* Fade-in animation for elements on load */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* =================================
+   3. Main Layout
+   ================================= */
 .container {
   display: flex;
   width: 100%;
+  height: 100%;
+  padding: 20px;
+  gap: 20px;
+}
+
+.sidebar, .main {
+  /* Apply the glassmorphism effect */
+  background: var(--glass-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-md);
+  padding: 30px;
+  animation: fadeIn 0.5s ease-out forwards;
 }
 
 .sidebar {
-  width: 280px;
-  background-color: #101c2d;
-  padding: 20px;
-  border-right: 1px solid #2a3a4a;
-}
-
-.sidebar h2 {
-  color: #00c8ff;
-  margin-bottom: 30px;
-}
-
-.sidebar .inputs input,
-.sidebar .inputs select {
-  width: 100%;
-  padding: 10px;
-  margin-bottom: 15px;
-  border: none;
-  border-radius: 5px;
-  background-color: #1e2a38;
-  color: white;
+  width: 300px;
+  flex-shrink: 0;
 }
 
 .main {
   flex-grow: 1;
-  padding: 40px;
   display: flex;
   flex-direction: column;
+  gap: 20px;
+  overflow: hidden; /* Contains the internal chatbox scroll */
+  animation-delay: 0.1s; /* Stagger animation */
+}
+
+/* =================================
+   4. Component Styling
+   ================================= */
+.sidebar h2 {
+  color: var(--accent);
+  margin-bottom: 30px;
+  font-weight: 600;
+  text-shadow: 0 0 10px var(--accent-glow);
 }
 
 .main h1 {
+  color: var(--text-primary);
   font-size: 24px;
-  margin-bottom: 20px;
-  color: #00c8ff;
+  font-weight: 500;
+  animation: fadeIn 0.5s ease-out 0.2s forwards;
+  opacity: 0; /* Initially hidden for animation */
 }
 
 .suggestions {
-  display: flex;
-  gap: 20px;
-  flex-wrap: wrap;
-  margin-bottom: 30px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 15px;
+  animation: fadeIn 0.5s ease-out 0.3s forwards;
+  opacity: 0;
 }
 
 .card {
-  background-color: #18283a;
-  padding: 15px 20px;
-  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.05);
+  padding: 15px;
+  border-radius: var(--radius-sm);
   cursor: pointer;
-  transition: 0.3s;
   border: 1px solid transparent;
+  transition: all var(--transition-speed) ease;
 }
 
 .card:hover {
-  border-color: #00c8ff;
+  transform: translateY(-4px);
+  background: rgba(255, 255, 255, 0.1);
+  border-color: var(--accent);
+  box-shadow: 0 0 20px var(--accent-glow);
 }
 
 .chatbox {
   flex-grow: 1;
-  background-color: #121e2e;
-  padding: 20px;
-  border-radius: 10px;
   overflow-y: auto;
-  max-height: 400px;
+  padding-right: 15px; /* Space for scrollbar */
+  animation: fadeIn 0.5s ease-out 0.4s forwards;
+  opacity: 0;
+}
+
+.user-msg, .bot-msg {
+  display: flex;
+  flex-direction: column;
   margin-bottom: 20px;
+  line-height: 1.6;
+  max-width: 80%;
 }
 
-.user-msg,
 .bot-msg {
-  margin-bottom: 15px;
-  line-height: 1.5;
+  align-items: flex-start;
+}
+.user-msg {
+  align-items: flex-end;
+  margin-left: auto;
 }
 
-.user-msg strong {
-  color: #00c8ff;
+.user-msg strong, .bot-msg strong {
+  font-weight: 500;
+  font-size: 0.9rem;
+  margin-bottom: 5px;
+}
+.user-msg strong { color: var(--accent); }
+.bot-msg strong { color: var(--success); }
+
+/* Chat Bubble Styling */
+.user-msg p, .bot-msg p {
+  padding: 10px 15px;
+  border-radius: var(--radius-md);
+  margin: 0;
 }
 
-.bot-msg strong {
-  color: #1ed760;
+.bot-msg p {
+  background: rgba(0, 0, 0, 0.2);
+  border-top-left-radius: 0;
+}
+
+.user-msg p {
+  background: linear-gradient(to right, var(--accent), #00a3cc);
+  color: var(--dark-bg);
+  font-weight: 500;
+  border-top-right-radius: 0;
+}
+
+/* =================================
+   5. Modern Form Inputs
+   ================================= */
+
+/* Add space between all form elements in the sidebar */
+.sidebar .inputs .select-wrapper,
+.sidebar .inputs input {
+    margin-bottom: 25px;
+}
+
+/* Style for the wrapper div needed for custom select arrow */
+.select-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+/* Custom arrow for the dropdown */
+.select-wrapper::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  right: 15px;
+  width: 0;
+  height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-top: 6px solid var(--text-secondary);
+  transform: translateY(-50%);
+  pointer-events: none; /* Allows clicking through the arrow */
+  transition: all var(--transition-speed) ease;
+}
+
+.select-wrapper:hover::after {
+  border-top-color: var(--accent);
+}
+
+/* General styles for all inputs and the select box */
+.sidebar .inputs input,
+.sidebar .inputs select,
+.user-input input {
+  width: 100%;
+  padding: 12px;
+  padding-right: 40px; /* Make space for the custom arrow */
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-sm);
+  background: rgba(0, 0, 0, 0.2);
+  color: var(--text-primary);
+  font-size: 1rem;
+  font-family: inherit;
+  transition: all var(--transition-speed) ease;
+  
+  /* Remove default browser appearance */
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+/* Specific focus styles */
+.sidebar .inputs input:focus,
+.sidebar .inputs select:focus,
+.user-input input:focus {
+  outline: none;
+  border-color: var(--accent);
+  background: rgba(0, 0, 0, 0.1);
+  box-shadow: 0 0 15px var(--accent-glow);
+}
+
+/* Style the actual dropdown options for a dark theme */
+.sidebar .inputs select option {
+  background: var(--dark-bg);
+  color: var(--text-primary);
 }
 
 .user-input {
   display: flex;
   gap: 10px;
+  animation: fadeIn 0.5s ease-out 0.5s forwards;
+  opacity: 0;
 }
 
-.user-input input {
-  flex-grow: 1;
-  padding: 12px;
-  border-radius: 5px;
-  border: none;
-  background-color: #1e2a38;
-  color: white;
-}
-
+/* Restyle button to be an icon button */
 .user-input button {
-  padding: 12px 20px;
+  flex-shrink: 0;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
   border: none;
-  border-radius: 5px;
-  background-color: #00c8ff;
-  color: black;
-  font-weight: bold;
+  background: var(--accent);
+  color: var(--dark-bg);
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition-speed) ease;
+  /* Add an SVG icon (like from feathericons.com) here */
 }
 
 .user-input button:hover {
-  background-color: #009fd8;
+  transform: scale(1.1) rotate(15deg);
+  box-shadow: 0 0 20px var(--accent-glow);
+}
+
+/* =================================
+   6. Chat Bubble Content Formatting
+   ================================= */
+
+/* Container for the formatted bot response */
+.bot-response-content {
+  margin-top: 8px; /* Adds a little space after the "Bot" title */
+}
+
+/* Style for paragraphs inside the bot message */
+.bot-response-content p {
+  margin: 0 0 10px 0; /* Space between paragraphs */
+  line-height: 1.6;
+}
+.bot-response-content p:last-child {
+  margin-bottom: 0;
+}
+
+/* Style for ordered lists (ol) and list items (li) */
+.bot-response-content ol {
+  padding-left: 20px; /* Standard indentation for lists */
+  margin: 10px 0;
+}
+
+.bot-response-content li {
+  margin-bottom: 8px; /* Space between list items */
+  line-height: 1.6;
+}
+
+.bot-response-content li:last-child {
+  margin-bottom: 0;
+}
+
+@media (max-width: 992px) {
+  body {
+    height: auto;
+    overflow: auto;
+  }
+
+  .container {
+    flex-direction: column;
+    padding: 10px;
+    gap: 10px;
+  }
+
+  .sidebar {
+    width: 100%;
+  }
 }

@@ -30,6 +30,23 @@ chat_sessions = {}
 @app.route("/")
 def index():
     return render_template("index.html")
+    
+
+
+@app.route("/welcome", methods=["GET"])
+def welcome():
+    try:
+        welcome_message = "You are Legal Advisory assistant. Greet the user and encourage them to provide their details at left side of the page and ask a question."
+
+        responseData = model.generate_content(welcome_message)
+        message = responseData.text
+
+        return jsonify({'response': message})
+    
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        return jsonify({"error": "An internal server error occurred. Please try again later."}), 500
+
 
 
 @app.route("/chat", methods=["POST"])
@@ -59,7 +76,7 @@ def chat():
             gender = gender_input.lower()
             pronoun = "he" if gender == "male" else "she"
 
-            print
+            # print
 
             prompt = (
                 f"You are a helpful legal rights assistant. You are talking to {name}, a {age}-year-old {gender}. "
@@ -76,6 +93,7 @@ def chat():
             chat_sessions[session_id] = chat_session
 
         current_chat = chat_sessions.get(session_id)
+
         if not current_chat:
             return jsonify({"error": "Your session has expired. Please refresh the page to start over."}), 400
 
